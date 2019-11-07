@@ -127,3 +127,6 @@ es:
           instructions_2: Una vez confirmado, podrás empezar a participar.
           thank_you: Gracias por registrarte en la web. Ahora debes <b>confirmar tu correo</b>.
           title: Revisa tu correo
+    gender:
+      male: Hombre
+      female: Mujer
