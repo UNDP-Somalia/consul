@@ -32,14 +32,14 @@
                            label: t("devise_views.users.registrations.new.password_confirmation_label"),
                            placeholder: t("devise_views.users.registrations.new.password_confirmation_label") %>
 
-      <%= f.date_field :date_of_birth %>
+      <%= f.date_field :date_of_birth, label: t("devise_views.users.registrations.new.date_of_birth_label") %>
 
+      <%= f.select :gender, options_for_select([[t("devise_views.users.registrations.new.gender.male"), 'male'],[t("devise_views.users.registrations.new.gender.female"), 'female']]), { include_blank: false }, label: t("devise_views.users.registrations.new.gender_label") %>
 
-      <%= f.select :gender, options_for_select([[t("devise_views.gender.male"), 'male'],[t("devise_views.gender.female"), 'female']]), { include_blank: false } %>
+      <%= label_tag t("devise_views.users.registrations.new.country_label") %>
+      <%= f.country_select :country, placeholder: t("devise_views.users.registrations.new.country_label"), selected: "SO" %>
 
-      <%= label_tag t("devise_views.country") %>
-      <%= f.country_select :country %>
-      <%= f.text_field :state, placeholder: t("devise_views.state") %>
+      <%= f.text_field :state, label: t("devise_views.users.registrations.new.state_label"), placeholder: t("devise_views.users.registrations.new.state_label") %>
 
       <% if resource.use_redeemable_code %>
         <%= f.text_field :redeemable_code %>
