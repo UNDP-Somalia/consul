@@ -28,7 +28,9 @@
 
       <span class="title-header">
         <%= link_to root_path, accesskey: "0" do %>
-              <h1> Dastuurka Doomaaliya </h1>
+          <h1>
+            <%= content_for?(:title) ? yield(:title) : setting["org_name"] %>
+          </h1>
         <% end %>
       </span>
 
