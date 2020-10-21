@@ -4,7 +4,6 @@ class DebatesController < ApplicationController
   include FlagActions
   include Translatable
 
-  before_action :parse_tag_filter, only: :index
   before_action :authenticate_user!, except: [:index, :show, :map]
   before_action :set_view, only: :index
   before_action :debates_recommendations, only: :index, if: :current_user
@@ -37,12 +36,12 @@ class DebatesController < ApplicationController
 
   def unmark_featured
     @debate.update!(featured_at: nil)
-    redirect_to request.query_parameters.merge(action: :index)
+    redirect_to debates_path
   end
 
   def mark_featured
     @debate.update!(featured_at: Time.current)
-    redirect_to request.query_parameters.merge(action: :index)
+    redirect_to debates_path
   end
 
   def disable_recommendations

@@ -22,6 +22,7 @@ $sidebar-hover:  #25597c;
 $sidebar-active: #f4fcd0;
 
 .admin {
+  @include admin-layout;
 
   h2 {
     font-weight: 100;
@@ -61,10 +62,6 @@ $sidebar-active: #f4fcd0;
     border-bottom: 1px solid #eee;
     color: #000;
     height: auto;
-
-    @include breakpoint(medium) {
-      box-shadow: 0 2px 2px #eee;
-    }
 
     @include breakpoint(small only) {
 
@@ -239,16 +236,8 @@ $sidebar-active: #f4fcd0;
       table-layout: fixed;
     }
 
-    [type="submit"] ~ a,
-    a ~ a {
-      margin-left: 0;
-      margin-right: 0;
-      margin-top: $line-height / 2;
-
-      @include breakpoint(medium) {
-        margin-left: $line-height / 2;
-        margin-top: 0;
-      }
+    [type="submit"] ~ a {
+      margin-left: $line-height / 2;
     }
   }
 
@@ -292,7 +281,6 @@ $sidebar-active: #f4fcd0;
   }
 
   .admin-content {
-
     .proposal-form {
       padding-top: 0;
     }
@@ -309,11 +297,6 @@ $sidebar-active: #f4fcd0;
 
 .for-print-only {
   display: none;
-}
-
-.admin-content {
-  overflow: scroll;
-  padding: $line-height !important;
 }
 
 @include breakpoint(medium) {
@@ -373,26 +356,25 @@ $sidebar-active: #f4fcd0;
 }
 
 .icon-sortable {
-  font-family: "icons";
+  font-family: "Font Awesome 5 Free";
   font-size: $small-font-size;
-  padding-right: $line-height / 2;
   position: relative;
 
   &::before,
   &::after {
     left: 6px;
-    opacity: 0.25;
+    opacity: 0.5;
     position: absolute;
   }
 
   &::before {
-    content: "\57";
-    top: -2px;
+    content: "\f0d8";
+    bottom: 0;
   }
 
   &::after {
-    content: "\52";
-    bottom: -10px;
+    content: "\f0d7";
+    top: 0;
   }
 
   &.asc {
@@ -431,10 +413,6 @@ code {
   background: linear-gradient(to bottom, #245b80 0%, #488fb5 100%);
   border-right: 1px solid $border;
 
-  @include breakpoint(medium) {
-    min-height: rem-calc(1100);
-  }
-
   ul {
     list-style-type: none;
     margin-bottom: 0;
@@ -444,11 +422,11 @@ code {
     [class^="icon-"] {
       color: #fff;
       display: inline-block;
-      font-size: rem-calc(24);
+      font-size: rem-calc(20);
       line-height: $line-height;
-      padding: $line-height / 2 $line-height / 4;
-      padding-left: 0;
+      text-align: center;
       vertical-align: middle;
+      width: $line-height * 1.5;
     }
   }
 
@@ -467,13 +445,20 @@ code {
       border-left: 2px solid $sidebar-active;
       font-weight: bold;
     }
+
+    &[aria-expanded="true"] {
+
+      > a::after {
+        transform: rotate(180deg);
+      }
+    }
   }
 
   li a {
     color: #fff;
     display: block;
-    line-height: rem-calc(48);
-    padding-left: rem-calc(12);
+    line-height: $line-height * 2;
+    padding-left: $line-height / 4;
     vertical-align: top;
 
     &:hover {
@@ -487,12 +472,13 @@ code {
 
     > a::after {
       border: 0;
-      content: "\61" !important;
-      font-family: "icons" !important;
+      content: "\f078";
+      font-family: "Font Awesome 5 Free";
+      font-weight: bold;
       height: auto;
-      position: absolute !important;
-      right: 30px;
-      top: 6px !important;
+      position: absolute;
+      right: 24px;
+      transition: 0.25s;
     }
   }
 
@@ -595,17 +581,6 @@ code {
   }
 }
 
-.log-value {
-  max-height: rem-calc(65);
-  overflow: hidden;
-  max-width: rem-calc(200);
-
-  &:hover {
-    max-height: rem-calc(1000);
-    transition: max-height 0.9s;
-  }
-}
-
 // 04. Stats
 // ---------
 
@@ -669,7 +644,7 @@ code {
   border-radius: rem-calc(3);
   font-size: rem-calc(16);
   font-weight: normal;
-  margin: $line-height;
+  margin-bottom: $line-height;
   padding: $line-height / 2;
 
   strong {
@@ -786,10 +761,6 @@ code {
   font-weight: bold;
 }
 
-.hidden {
-  display: none;
-}
-
 table {
 
   .callout {
@@ -798,15 +769,6 @@ table {
     margin: 0;
     padding: 0 $line-height / 2;
   }
-}
-
-.info-type {
-  background-color: #ccf5ff;
-  padding: 15px;
-}
-
-.margin-description {
-  margin-top: rem-calc(20);
 }
 
 // 07. Legislation
@@ -1313,7 +1275,7 @@ table {
   }
 }
 
-.column-selecteable {
+.column-selectable {
 
   .hidden {
     display: none;

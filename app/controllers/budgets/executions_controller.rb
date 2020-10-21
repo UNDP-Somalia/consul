@@ -1,27 +1,13 @@
 module Budgets
   class ExecutionsController < ApplicationController
-    include DownloadSettingsHelper
     before_action :load_budget
 
-    load_and_authorize_resource :budget
+    authorize_resource :budget
 
     def show
       authorize! :read_executions, @budget
       @statuses = Milestone::Status.all
       @investments_by_heading = investments_by_heading_ordered_alphabetically.to_h
-      downloadables = []
-      investments_by_heading_ordered_alphabetically
-        .map { |heading| downloadables.concat heading[1] }
-
-      respond_to do |format|
-        format.html
-        format.csv do
-          send_data to_csv(downloadables, Budget::Investment, 1),
-                    type: "text/csv",
-                    disposition: "attachment",
-                    filename: "budget_investment_milestones.csv"
-        end
-      end
     end
 
     private

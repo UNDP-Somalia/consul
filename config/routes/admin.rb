@@ -44,7 +44,7 @@ namespace :admin do
     end
   end
 
-  resources :proposal_notifications, only: :index do
+  resources :hidden_proposal_notifications, only: :index do
     member do
       put :restore
       put :confirm_hide
@@ -54,7 +54,6 @@ namespace :admin do
   resources :budgets do
     member do
       put :calculate_winners
-      get :assigned_users_translation
     end
 
     resources :groups, except: [:show], controller: "budget_groups" do
@@ -63,6 +62,10 @@ namespace :admin do
 
     resources :budget_investments, only: [:index, :show, :edit, :update] do
       member { patch :toggle_selection }
+
+      resources :audits, only: :show, controller: "budget_investment_audits"
+      resources :milestones, controller: "budget_investment_milestones"
+      resources :progress_bars, except: :show, controller: "budget_investment_progress_bars"
     end
 
     resources :budget_phases, only: [:edit, :update]
@@ -100,11 +103,6 @@ namespace :admin do
   end
 
   resources :valuators, only: [:show, :index, :edit, :update, :create, :destroy] do
-    get :search, on: :collection
-    get :summary, on: :collection
-  end
-
-  resources :trackers, only: [:show, :index, :edit, :update, :create, :destroy] do
     get :search, on: :collection
     get :summary, on: :collection
   end
@@ -162,7 +160,6 @@ namespace :admin do
     end
 
     resource :active_polls, only: [:create, :edit, :update]
-    get :get_options_traductions, controller: "questions"
   end
 
   resources :verifications, controller: :verifications, only: :index do
@@ -212,7 +209,8 @@ namespace :admin do
         member { patch :toggle_selection }
       end
       resources :draft_versions
-      resources :milestones, only: :index
+      resources :milestones
+      resources :progress_bars, except: :show
       resource :homepage, only: [:edit, :update]
     end
   end
@@ -250,13 +248,48 @@ namespace :admin do
     resources :administrator_tasks, only: [:index, :edit, :update]
   end
 
-  get "download_settings/:resource", to: "download_settings#edit", as: "edit_download_settings"
-  put "download_settings/:resource", to: "download_settings#update", as: "update_download_settings"
-
-  get "/change_log/:id", to: "budget_investments#show_investment_log", as: "change_log"
-
   resources :local_census_records
   namespace :local_census_records do
     resources :imports, only: [:new, :create, :show]
   end
+end
+
+resolve "Milestone" do |milestone|
+  [*resource_hierarchy_for(milestone.milestoneable), milestone]
+end
+
+resolve "ProgressBar" do |progress_bar|
+  [*resource_hierarchy_for(progress_bar.progressable), progress_bar]
+end
+
+resolve "Audit" do |audit|
+  [*resource_hierarchy_for(audit.associated || audit.auditable), audit]
+end
+
+resolve "Budget::Group" do |group, options|
+  [group.budget, :group, options.merge(id: group)]
+end
+
+resolve "Budget::Heading" do |heading, options|
+  [heading.budget, :group, :heading, options.merge(group_id: heading.group, id: heading)]
+end
+
+resolve "Poll::Booth" do |booth, options|
+  [:booth, options.merge(id: booth)]
+end
+
+resolve "Poll::BoothAssignment" do |assignment, options|
+  [assignment.poll, :booth_assignment, options.merge(id: assignment)]
+end
+
+resolve "Poll::Shift" do |shift, options|
+  [:booth, :shift, options.merge(booth_id: shift.booth, id: shift)]
+end
+
+resolve "Poll::Officer" do |officer, options|
+  [:officer, options.merge(id: officer)]
+end
+
+resolve "Poll::Question::Answer::Video" do |video, options|
+  [:video, options.merge(id: video)]
 end

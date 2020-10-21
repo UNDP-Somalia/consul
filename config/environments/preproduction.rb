@@ -30,15 +30,11 @@ Rails.application.configure do
   config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
 
   # Compress JavaScripts and CSS.
-  config.assets.js_compressor = :uglifier
+  config.assets.js_compressor = Uglifier.new(harmony: true)
   # config.assets.css_compressor = :sass
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
   config.assets.compile = false
-
-  # Asset digests allow you to set far-future HTTP expiration dates on all assets,
-  # yet still be able to expire them through the digest params.
-  config.assets.digest = true
 
   # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
 
@@ -47,7 +43,8 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
+  # Configure force_ssl in secrets.yml
+  config.force_ssl = Rails.application.secrets.force_ssl
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
@@ -71,21 +68,15 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: Rails.application.secrets.server_name }
   config.action_mailer.asset_host = "https://#{Rails.application.secrets.server_name}"
 
-  # SMTP configuration to deliver emails
-  # Uncomment the following block of code and add your SMTP service credentials
-  # config.action_mailer.delivery_method = :smtp
-  # config.action_mailer.smtp_settings = {
-  #   address:              "smtp.example.com",
-  #   port:                 587,
-  #   domain:               "example.com",
-  #   user_name:            "<username>",
-  #   password:             "<password>",
-  #   authentication:       "plain",
-  #   enable_starttls_auto: true }
+  # Configure your SMTP service credentials in secrets.yml
+  if Rails.application.secrets.smtp_settings
+    config.action_mailer.delivery_method = Rails.application.secrets.mailer_delivery_method || :smtp
+    config.action_mailer.smtp_settings = Rails.application.secrets.smtp_settings
+  end
 
-  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
-  # the I18n.default_locale when a translation cannot be found).
-  config.i18n.fallbacks = true
+  # Disable locale fallbacks for I18n
+  # (prevents using fallback locales set in application.rb).
+  # config.i18n.fallbacks = false
 
   # Send deprecation notices to registered listeners.
   config.active_support.deprecation = :notify

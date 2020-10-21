@@ -3,10 +3,16 @@ module BudgetsHelper
     ["balloting", "reviewing_ballots", "finished"].include? budget.phase
   end
 
+  def budget_voting_styles_select_options
+    Budget::VOTING_STYLES.map do |style|
+      [Budget.human_attribute_name("voting_style_#{style}"), style]
+    end
+  end
+
   def heading_name_and_price_html(heading, budget)
-    content_tag :div do
+    tag.div do
       concat(heading.name + " ")
-      concat(content_tag(:span, budget.formatted_heading_price(heading)))
+      concat(tag.span(budget.formatted_heading_price(heading)))
     end
   end
 
@@ -50,19 +56,7 @@ module BudgetsHelper
   end
 
   def current_ballot
-    Budget::Ballot.where(user: current_user, budget: @budget).first
-  end
-
-  def investment_tags_select_options(budget)
-    tags = Budget::Investment.by_budget(budget).tags_on(:valuation).order(:name).pluck(:name)
-    tags = tags.concat budget.budget_valuation_tags.split(",") if budget.budget_valuation_tags.present?
-    tags.uniq
-  end
-
-  def investment_milestone_tags_select_options(budget)
-    tags = Budget::Investment.by_budget(budget).tags_on(:milestone).order(:name).pluck(:name)
-    tags = tags.concat budget.budget_milestone_tags.split(",") if budget.budget_milestone_tags.present?
-    tags.uniq
+    Budget::Ballot.find_by(user: current_user, budget: @budget)
   end
 
   def unfeasible_or_unselected_filter
@@ -101,18 +95,6 @@ module BudgetsHelper
     current_user &&
     !current_user.voted_in_group?(investment.group) &&
     investment.group.headings.count > 1
-  end
-
-  def link_to_create_budget_poll(budget)
-    balloting_phase = budget.phases.where(kind: "balloting").first
-
-    link_to t("admin.budgets.index.admin_ballots"),
-            admin_polls_path(poll: {
-                              name:      budget.name,
-                              budget_id: budget.id,
-                              starts_at: balloting_phase.starts_at,
-                              ends_at:   balloting_phase.ends_at }),
-            method: :post
   end
 
   def budget_subnav_items_for(budget)

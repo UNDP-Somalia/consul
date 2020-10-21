@@ -3,16 +3,8 @@ module ImageablesHelper
     imageable.image.present? && can?(:destroy, imageable.image)
   end
 
-  def imageable_class(imageable)
-    imageable.class.name.parameterize(separator: "_")
-  end
-
   def imageable_max_file_size
-    bytes_to_megabytes(Setting["uploads.images.max_size"].to_i.megabytes)
-  end
-
-  def bytes_to_megabytes(bytes)
-    bytes / Numeric::MEGABYTE
+    Setting["uploads.images.max_size"].to_i
   end
 
   def imageable_accepted_content_types

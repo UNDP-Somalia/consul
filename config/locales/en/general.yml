@@ -95,9 +95,6 @@ en:
       tags_placeholder: "Enter the tags you would like to use, separated by commas (',')"
     index:
       featured_debates: Featured
-      filter_topic:
-        one: " with topic '%{topic}'"
-        other: " with topic '%{topic}'"
       orders:
         confidence_score: highest rated
         created_at: newest
@@ -244,7 +241,6 @@ en:
       help: Help
       my_account_link: My account
       my_activity_link: My content
-      open: open
       open_gov: Open government
       proposals: Proposals
       poll_questions: Voting
@@ -255,9 +251,6 @@ en:
           other: You have %{count} new notifications
         notifications: Notifications
         no_notifications: "You don't have new notifications"
-      tracking: "Tracking"
-    admin:
-      watch_form_message: "You have unsaved changes. Do you confirm to leave the page?"
   notifications:
     index:
       empty_notifications: You don't have new notifications.
@@ -295,12 +288,17 @@ en:
       sign_in: Sign in with Google
       sign_up: Sign up with Google
       name: Google
+    wordpress_oauth2:
+      sign_in: Sign in with Wordpress
+      sign_up: Sign up with Wordpress
+      name: Wordpress
     twitter:
       sign_in: Sign in with Twitter
       sign_up: Sign up with Twitter
       name: Twitter
-    info_sign_in: "Sign in with:"
-    info_sign_up: "Sign up with:"
+    info:
+      sign_in: "Sign in with:"
+      sign_up: "Sign up with:"
     or_fill: "Or fill the following form:"
   proposals:
     create:
@@ -348,9 +346,6 @@ en:
       map_skip_checkbox: "This proposal doesn't have a concrete location or I'm not aware of it."
     index:
       featured_proposals: Featured
-      filter_topic:
-        one: " with topic '%{topic}'"
-        other: " with topic '%{topic}'"
       orders:
         confidence_score: highest rated
         created_at: newest
@@ -536,13 +531,12 @@ en:
       comments: Comments
       latest_comments: Latest messages
     messages:
-      send_notification: Send message to proposal supporters
+      send_notification: Send message to proposal followers
       previous_notifications: See previous notifications
     polls:
       index:
         title: Polls
         create: Create poll
-        succesfull: Answer added succesfully
         count:
           one: You have created %{count} poll.
           other: You have created %{count} polls.
@@ -577,12 +571,10 @@ en:
         title: Poster preview
         poster_title: "Do not keep looking,"
         poster_subtitle: "back me up! ;)"
-        intro_text:
-          "<strong>I am participating in %{org}</strong> with my own citizen proposal and only if you also add you can I achieve the
-          necessary support to make the city we all want."
+        intro_text: "<strong>I am participating in %{org}</strong> with my own citizen proposal and only with your support can we make the city we all want"
         proposal_code: "Code of the proposal: %{code}"
         support: Support my proposal
-        footer: "<strong>Visit %{link} and support this proposal.</strong> We need to be many. Decide your too. Thank you!"
+        footer: "<strong>Visit %{link} and support this proposal.</strong> The more, the better. Let's do our bit. Thank you!"
       new:
         title: Poster of your proposal
       options:
@@ -634,17 +626,6 @@ en:
         title: Help about voting
         description: Citizens' polls are a participatory mechanism by which citizens with voting rights can make direct decisions
       no_polls: "There are no open votings."
-      max_votes_reached: "You have already made the maximum number of votes. Thank you very much for participating"
-      descriptions:
-        unique: It's only possible to answer one time to the question.
-        multiple: Allows to choose multiple answers. It's possible to set the maximum number of answers.
-        prioritized: Allows to choose more than one answer and they will be prioritized. It's possible to set the maximum number of answers chosen and the answer count type.
-        positive_open: Allows to vote positively a maximum number of times to questions. It's possible to set the maximum number of answers and add other answers.
-        positive_negative_open:  Allows to vote positively and negatively a maximum number of times to questions. It's possible to set the maximum number of answers and add other answers.
-        answer_couples_open: Allows to vote a maximum number of times to couples of possible answers. It's possible to set the maximum number of couples and add other answers.
-        answer_couples_closed: Allows to vote a maximum number of times to couples of possible answers. It's possible to set the maximum number of couples and it's not possible to add other answers.
-        answer_set_open: Allows to vote a maximum number of answers to a group of them. It's possible to set the maximum number of answers, the size of the group and add other answers.
-        answer_set_closed: Allows to vote a maximum number of answers to a group of them. It's possible to set the maximum number of answers and the size of the group.
     show:
       already_voted_in_booth: "You have already participated in a physical booth. You can not participate again."
       already_voted_in_web: "You have already participated in this poll. If you vote again it will be overwritten."
@@ -683,19 +664,6 @@ en:
     show:
       vote_answer: "Vote %{answer}"
       voted: "You have voted %{answer}"
-      your_answer: "You can add your own answer"
-      add_answer: "Add answer"
-    description:
-      multiple: "You can select a maximum of %{maximum} answers."
-      positive_negative_open: "You can vote positive or negative a maximum of %{maximum} answers. And you can add your own answers."
-      answer_couples_open: "Choose an option from the following pair. You can choose a maximum of %{maximum} answers."
-      answer_couples_closed: "Choose an option from the following pair. You can choose a maximum of %{maximum} answers."
-      answer_set_open: "You can choose a maximum of %{maximum} answers."
-      answer_set_closed: "You can choose a maximum of %{maximum} answers."
-      prioritized: "You can select a maximum of %{maximum} answers. This question will use the %{system} system for count."
-      positive_open: "You can select a maximum of %{maximum} answers and add your own answers."
-      unique: ""
-    read_more_about: "Read more about:"
   proposal_notifications:
     new:
       title: "Send message"
@@ -751,7 +719,6 @@ en:
             notice: "Now you are following this citizen proposal! <br> We will notify you of changes as they occur so that you are up-to-date."
           destroy:
             notice: "You have stopped following this citizen proposal! <br> You will no longer receive notifications related to this proposal."
-    hide: Hide
     print:
       print_button: Print this info
     search: Search
@@ -800,22 +767,14 @@ en:
         title: Recommendations
         see_more: See more recommendations
         hide: Hide recommendations
-    download:
-      title: "Downloads"
-      link:
-        proposal: "Download proposals"
-        debate: "Download debates"
-        legislation_process: "Download legislation processes"
-        budget: "Download budgets"
-        investments: "Download projects"
     translations:
       select_language_prompt: Choose language
       remove_language: Remove language
       add_language: Add language
       languages_in_use:
-        zero: "<span class='count'>0</span> <span class='description'>languages in use</span>"
-        one: "<span class='count'>1</span> <span class='description'>language in use</span>"
-        other: "<span class='count'>%{count}</span> <span class='description'>languages in use</span>"
+        zero: "0 languages in use"
+        one: "1 language in use"
+        other: "%{count} languages in use"
   social:
     facebook: "%{org} Facebook"
     twitter: "%{org} Twitter"
@@ -998,21 +957,6 @@ en:
       surveys: Surveys
     poll:
       take_part: Take part from %{from} to %{to}
-  question:
-    votation_type: Votation type
-  enum_type:
-    unique: Unique answer, closed
-    multiple: Multiple answers, closed
-    prioritized: Multiple prioritized answer, closed
-    positive_open: Votable positive, open
-    positive_negative_open: Votable positive and negative, open
-    answer_couples_open: Couples of answers, open
-    answer_couples_closed: Couples of answers, closed
-    answer_set_open: Set of answers, open
-    answer_set_closed: Set of answers, closed
-  prioritization_type:
-    borda: Borda votation
-    dowdall: Dowdall votation
   remote_translations:
     text: The content of this page is not available in your language
     all_remote_translations_enqueued_text: In a short period of time refreshing the page you will be able to see all the content in your language.

@@ -118,6 +118,10 @@ FactoryBot.define do
     association :signable, factory: :proposal
     association :author, factory: :user
     required_fields_to_verify { "123A, 456B, 789C" }
+
+    trait :with_title do
+      title { Faker::Lorem.sentence }
+    end
   end
 
   factory :signature do
@@ -132,7 +136,7 @@ FactoryBot.define do
   end
 
   factory :dashboard_action, class: "Dashboard::Action" do
-    title { Faker::Lorem.sentence[0..79] }
+    title { Faker::Lorem.sentence[0..79].strip }
     description { Faker::Lorem.sentence }
     link { nil }
     request_to_administrators { true }

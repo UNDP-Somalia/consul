@@ -1,6 +1,6 @@
 el:
   social_share_button:
-    share_to: "Μοιραστείτε στο %{name}"
+    share_to: "Μοιραστείτε το με %{name}"
     weibo: "Sina Weibo"
     twitter: "Twitter"
     facebook: "Facebook"
@@ -11,7 +11,6 @@ el:
     baidu: "Baidu.com"
     kaixin001: "Kaixin001.com"
     renren: "Renren.com"
-    google_plus: "Google+"
     google_bookmark: "Google Bookmarks"
     tumblr: "Tumblr"
     plurk: "Plurk"

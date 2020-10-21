@@ -1,15 +1,12 @@
-require "csv"
-
 class Comment < ApplicationRecord
   include Flaggable
   include HasPublicAuthor
   include Graphqlable
   include Notifiable
-  extend DownloadSettings::CommentCsv
 
   COMMENTABLE_TYPES = %w[Debate Proposal Budget::Investment Poll Topic
                         Legislation::Question Legislation::Annotation
-                        Legislation::Proposal Legislation::PeopleProposal].freeze
+                        Legislation::Proposal].freeze
 
   acts_as_paranoid column: :hidden_at
   include ActsAsParanoidAliases
@@ -52,6 +49,7 @@ class Comment < ApplicationRecord
 
   scope :sort_by_most_voted, -> { order(confidence_score: :desc, created_at: :desc) }
   scope :sort_descendants_by_most_voted, -> { order(confidence_score: :desc, created_at: :asc) }
+  scope :sort_by_supports, -> { order(Arel.sql("cached_votes_up - cached_votes_down DESC")) }
 
   scope :sort_by_newest, -> { order(created_at: :desc) }
   scope :sort_descendants_by_newest, -> { order(created_at: :desc) }
@@ -130,6 +128,10 @@ class Comment < ApplicationRecord
   def calculate_confidence_score
     self.confidence_score = ScoreCalculator.confidence_score(cached_votes_total,
                                                              cached_votes_up)
+  end
+
+  def votes_score
+    cached_votes_up - cached_votes_down
   end
 
   private

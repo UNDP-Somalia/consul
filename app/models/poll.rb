@@ -40,7 +40,6 @@ class Poll < ApplicationRecord
   accepts_nested_attributes_for :questions, reject_if: :all_blank, allow_destroy: true
 
   scope :for, ->(element) { where(related: element) }
-  scope :public_polls, -> { where(related: nil) }
   scope :current,  -> { where("starts_at <= ? and ? <= ends_at", Date.current.beginning_of_day, Date.current.beginning_of_day) }
   scope :expired,  -> { where("ends_at < ?", Date.current.beginning_of_day) }
   scope :recounting, -> { where(ends_at: (Date.current.beginning_of_day - RECOUNT_DURATION)..Date.current.beginning_of_day) }
@@ -100,8 +99,8 @@ class Poll < ApplicationRecord
   def self.answerable_by(user)
     return none if user.nil? || user.unverified?
 
-    current.joins('LEFT JOIN "geozones_polls" ON "geozones_polls"."poll_id" = "polls"."id"')
-           .where("geozone_restricted = ? OR geozones_polls.geozone_id = ?", false, user.geozone_id)
+    current.left_joins(:geozones)
+      .where("geozone_restricted = ? OR geozones.id = ?", false, user.geozone_id)
   end
 
   def self.votable_by(user)

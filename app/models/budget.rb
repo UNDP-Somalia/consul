@@ -20,11 +20,13 @@ class Budget < ApplicationRecord
   end
 
   CURRENCY_SYMBOLS = %w[€ $ £ ¥].freeze
+  VOTING_STYLES = %w[knapsack approval].freeze
 
   validates_translation :name, presence: true
   validates :phase, inclusion: { in: Budget::Phase::PHASE_KINDS }
   validates :currency_symbol, presence: true
   validates :slug, presence: true, format: /\A[a-z0-9\-_]+\z/
+  validates :voting_style, inclusion: { in: VOTING_STYLES }
 
   has_many :investments, dependent: :destroy
   has_many :ballots, dependent: :destroy
@@ -32,8 +34,6 @@ class Budget < ApplicationRecord
   has_many :headings, through: :groups
   has_many :lines, through: :ballots, class_name: "Budget::Ballot::Line"
   has_many :phases, class_name: "Budget::Phase"
-  has_many :budget_trackers
-  has_many :trackers, through: :budget_trackers
   has_many :budget_administrators
   has_many :administrators, through: :budget_administrators
   has_many :budget_valuators
@@ -49,6 +49,7 @@ class Budget < ApplicationRecord
   scope :reviewing, -> { where(phase: "reviewing") }
   scope :selecting, -> { where(phase: "selecting") }
   scope :valuating, -> { where(phase: "valuating") }
+  scope :valuating_or_later, -> { where(phase: Budget::Phase.kind_or_later("valuating")) }
   scope :publishing_prices, -> { where(phase: "publishing_prices") }
   scope :balloting, -> { where(phase: "balloting") }
   scope :reviewing_ballots, -> { where(phase: "reviewing_ballots") }
@@ -164,10 +165,6 @@ class Budget < ApplicationRecord
     formatted_amount(heading_price(heading))
   end
 
-  def formatted_heading_amount_spent(heading)
-    formatted_amount(amount_spent(heading))
-  end
-
   def investments_orders
     case phase
     when "accepting", "reviewing"
@@ -197,8 +194,12 @@ class Budget < ApplicationRecord
     investments.winners.any?
   end
 
-  def milestone_tags
+  def investments_milestone_tags
     investments.winners.map(&:milestone_tag_list).flatten.uniq.sort
+  end
+
+  def approval_voting?
+    voting_style == "approval"
   end
 
   private

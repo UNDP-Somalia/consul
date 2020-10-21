@@ -1,4 +1,9 @@
 el:
+  attributes:
+    geozone_id: "Πεδίο Δράσεως"
+    results_enabled: "Εμφάνιση αποτελεσμάτων"
+    stats_enabled: "Εμφάνιση στατιστικών στοιχείων"
+    advanced_stats_enabled: "Εμφάνιση σύνθετων στατιστικών στοιχείων"
   activerecord:
     models:
       activity:
@@ -33,16 +38,16 @@ el:
         other: "Χρήστης"
       moderator:
         one: "Συντονιστής"
-        other: "Συντονιστής"
+        other: "Συντονιστές"
       administrator:
         one: "Διαχειριστής"
-        other: "Διαχειριστής"
+        other: "Διαχειριστές"
       valuator:
         one: "Αξιολογητής"
         other: "Αξιολογητής"
       valuator_group:
         one: "Ομάδα αξιολόγησης"
-        other: "Ομάδα αξιολόγησης"
+        other: "Ομάδες αξιολόγησης"
       manager:
         one: "Υπεύθυνος"
         other: "Υπεύθυνος"
@@ -63,13 +68,10 @@ el:
         other: "Λειτουργός"
       poll/ballot_sheet:
         one: Φύλλο ψηφοφορίας
-        other: Φύλλο ψηφοφορίας
+        other: Φύλλα ψηφοφορίας
       proposal:
         one: "Πρόταση πολίτη"
-        other: "Πρόταση πολίτη"
-      spending_proposal:
-        one: "Επενδυτικό έργο"
-        other: "Επενδυτικά έργα"
+        other: "Προτάσεις πολιτών"
       site_customization/page:
         one: Προσαρμοσμένη σελίδα
         other: Προσαρμοσμένες σελίδες
@@ -110,32 +112,37 @@ el:
         one: "Θέμα"
         other: "Θέματα"
       poll:
-        one: "Δημοσκόπηση"
+        one: "Ψηφοφορία"
         other: "Δημοσκοπήσεις"
       proposal_notification:
         one: "Ειδοποίηση πρότασης"
         other: "Κοινοποιήσεις της πρότασης"
       dashboard/action:
-        one: Πίνακας εργαλείων προτάσεων
-        other: Πίνακας εργαλείων προτάσεων
+        one: Δράση πίνακα εργαλείων προτάσεων
+        other: Δράσεις πίνακα εργαλείων προτάσεων
       dashboard/administrator_task:
         one: Εργασία
         other: Εργασίες
       link:
         one: Σύνδεσμος
         other: Σύνδεσμοι
+      local_census_record:
+        one: Τοπικά αρχεία
+        other: Τίτλος
     attributes:
       budget:
         name: "Όνομα"
-        description_accepting: "Περιγραφή κατά τη φάση αποδοχής"
-        description_reviewing: "Περιγραφή κατά τη φάση Αναθεώρησης"
+        description_accepting: "Περιγραφή κατά τη φάση Αποδοχής"
+        description_reviewing: "Περιγραφή κατά τη φάση Επιθεώρησης"
         description_selecting: "Περιγραφή κατά τη φάση Επιλογής"
         description_valuating: "Περιγραφή κατά τη φάση Αξιολόγησης"
         description_balloting: "Περιγραφή κατά τη φάση Ψηφοφορίας"
-        description_reviewing_ballots: "Περιγραφή κατά τη διάρκεια της φάσης Αναθεώρησης Ψηφοδελτίων"
-        description_finished: "Περιγραφή όταν έχει ολοκληρωθεί ο προϋπολογισμός"
+        description_reviewing_ballots: "Περιγραφή κατά τη διάρκεια της φάσης Επιθεώρησης Ψηφοδελτίων"
+        description_finished: "Περιγραφή με την ολοκληρωση του προϋπολογισμού"
         phase: "Φάση"
         currency_symbol: "Συνάλλαγμα"
+      budget/translation:
+        name: "Όνομα"
       budget/investment:
         heading_id: "Επικεφαλίδα"
         title: "Τίτλος"
@@ -144,8 +151,25 @@ el:
         administrator_id: "Διαχειριστής"
         location: "Τοποθεσία (προαιρετικό)"
         organization_name: "Εάν υποβάλετε πρόταση εκ μέρους ομάδας, οργανισμού ή άλλων προσώπων, παρακαλείσθε όπως αναφέρετε την ονομάσία τους"
-        image: "Περιγραφική εικόνα πρότασης"
+        image: "Εικόνα πρότασης"
         image_title: "Τίτλος εικόνας"
+        duration: "Χρονικό πλαίσιο"
+        feasibility_feasible: "Εφικτό"
+        feasibility_undecided: "Απροσδιόριστο"
+        feasibility_unfeasible: "Ανέφικτο"
+        incompatible: "Σημειώστε ως μη συμβατό"
+        milestone_tag_list: "Ετικέτες οροσήμου"
+        price_explanation: "Επεξήγηση τιμής"
+        selected: "Σημείωστε ως επιλεγμένο"
+        selected_true: "Επιλεγμένο"
+        selected_false: "Δεν επιλέχθηκε"
+        unfeasibility_explanation: "Εξήγηση της σκοπιμότητας"
+        valuation_finished: "Η αξιολόγηση ολοκληρώθηκε"
+        valuator_ids: "Ομάδες"
+        valuation_tag_list: "Ετικέτες"
+      budget/investment/translation:
+        title: "Τίτλος"
+        description: "Περιγραφή"
       geozone:
         name: Όνομα
         external_code: "Εξωτερικός κώδικας (προαιρετικό)"
@@ -156,6 +180,8 @@ el:
         title: "Τίτλος"
         description: "Περιγραφή (προαιρετικό έαν έχει ανατεθεί μια κατάσταση)"
         publication_date: "Ημερομηνία δημοσίευσης"
+      milestone/translation:
+        description: "Περιγραφή"
       milestone/status:
         name: "Όνομα"
         description: "Περιγραφή (προαιρετικό)"
@@ -166,45 +192,80 @@ el:
       progress_bar/kind:
         primary: "Στοιχειώδης"
         secondary: "Δευτερεύων"
+      budget/group:
+        max_votable_headings: "Μέγιστος αριθμός επικεφαλίδων στις οποίες μπορεί να ψηφίσει ένας χρήστης"
+      budget/group/translation:
+        name: "Όνομα ομάδας"
       budget/heading:
+        allow_custom_content: "Επιτρέψτε αποκλεισμό περιεχομένου"
+        latitude: "Γεωγραφικό πλάτος (προαιρετικό)"
+        longitude: "Γεωγραφικό μήκος (προαιρετικό)"
         name: "Όνομα επικεφαλίδας"
         price: "Τιμή"
         population: "Πληθυσμός"
+      budget/heading/translation:
+        name: "Όνομα επικεφαλίδας"
+      budget/phase:
+        enabled: "Ενεργοποιημένη Φάση"
+        ends_at: "Ημερομηνία ολοκλήρωσης"
+        starts_at: "Ημερομηνία έναρξης"
+      budget/phase/translation:
+        description: "Περιγραφή"
+        summary: "Περίληψη"
       comment:
         body: "Σχόλιο"
         user: "Χρήστης"
       debate:
-        author: "Συντάκτης"
+        author: "Δημιουργός"
         description: "Γνώμη"
+        tag_list: "Θέματα"
         terms_of_service: "Όροι υπηρεσίας"
         title: "Τίτλος"
+      debate/translation:
+        title: "Τίτλος συζήτησης"
+        description: "Αρχικό κείμενο συζήτησης"
       proposal:
-        author: "Συντάκτης"
+        author: "Δημιουργός"
         title: "Τίτλος"
         question: "Ερώτηση"
         description: "Περιγραφή"
+        responsible_name: "Πλήρες όνομα του ατόμου που υποβάλλει την πρόταση"
+        retired_reason: "Λόγος για να αποσυρθεί η πρόταση"
+        selected: "Σημείωστε ως επιλεγμένο"
         terms_of_service: "Όροι υπηρεσίας"
+        video_url: "Εξωτερικό βίντεο URL"
+      proposal/translation:
+        title: "Τίτλος πρότασης"
+        description: "Κείμενο πρότασης"
+        summary: "Περίληψη πρότασης"
+        retired_explanation: "Επεξήγηση"
       user:
         login: "E-mail ή όνομα χρήστη"
         email: "E-Mail"
         username: "Όνομα χρήστη"
         password_confirmation: "Επιβεβαίωση κωδικού πρόσβασης"
         password: "Κωδικός πρόσβασης"
-        current_password: "Τρέχων κωδικός πρόσβασης"
-        phone_number: "Αριθμός τηλεφώνου"
+        current_password: "Υφιστάμενος κωδικός πρόσβασης"
+        email_digest: "Αποστολή περίληψης των ειδοποιήσεων σχετικά με την πρόταση"
+        email_on_comment: "Ειδοποιείστε με μέσω email όταν κάποιος σχολιάζει τις προτάσεις ή τις συζητήσεις μου"
+        email_on_comment_reply: "Ειδοποιείστε με μέσω email όταν κάποιος απαντά σε σχόλιά μου"
+        email_on_direct_message: "Λήψη E-mail για τα άμεσα μηνύματα"
+        newsletter: "Λήψη μέσω E-mail των σχετικών με το website πληροφοριών"
         official_position: "Επίσημη θέση"
+        official_position_badge: "Εμφάνιση του συμβόλου της επίσημης θέσης"
         official_level: "Επίσημο επίπεδο"
+        phone_number: "Αριθμός τηλεφώνου"
+        public_activity: "Κρατήστε δημόσια τη λίστα των δραστηριοτήτων μου"
+        public_interests: "Κρατήστε τις ετικέτες των στοιχείων που ακολουθώ δημόσια"
+        recommended_debates: "Εμφάνιση προτάσεων για δημόσιες συζητήσεις"
+        recommended_proposals: "Εμφάνιση συστάσεων για προτάσεις"
         redeemable_code: "Κωδικός επαλήθευσης που λάβατε μέσω email"
+      direct_message:
+        title: "Τίτλος"
+        body: "Μήνυμα"
       organization:
         name: "Επωνυμία οργανισμού"
         responsible_name: "Υπεύθυνος ομάδας"
-      spending_proposal:
-        administrator_id: "Διαχειριστής"
-        association_name: "Όνομα οργανισμού"
-        description: "Περιγραφή"
-        external_url: "Σύνδεσμος πρόσθετης τεκμηρίωσης"
-        geozone_id: "Πεδίο Δράσεως"
-        title: "Τίτλος"
       poll:
         name: "Όνομα"
         starts_at: "Ημερομηνία έναρξης"
@@ -212,11 +273,17 @@ el:
         geozone_restricted: "Περιορίζεται από το geozone"
         summary: "Περίληψη"
         description: "Περιγραφή"
+      active_poll/translation:
+        description: "Περιγραφή"
+      poll/booth:
+        name: "Όνομα"
+        location: "Τοποθεσία"
       poll/translation:
         name: "Όνομα"
         summary: "Περίληψη"
         description: "Περιγραφή"
       poll/question:
+        poll_id: "Ψηφοφορία"
         title: "Ερώτηση"
         summary: "Περίληψη"
         description: "Περιγραφή"
@@ -225,17 +292,20 @@ el:
         title: "Ερώτηση"
       poll/ballot_sheet:
         data: Στοιχεία CSV
-        poll_id: Δημοσκόπηση
-        officer_assignment_id: Ανάθεση Εργασίας Λειτουργού
+        poll_id: Ψηφοφορία
+        officer_assignment_id: Εργασία Λειτουργού
+      poll/shift:
+        task: "Εργασία"
       signature_sheet:
+        title: "Τίτλος"
         signable_type: "Τύπος με δυνατότητα υπογραφής"
-        signable_id: "Με δυνατότητα υπογραφής ID"
+        signable_id: "ID με δυνατότητα υπογραφής "
         document_numbers: "Αριθμοί εγγράφων"
       site_customization/page:
         content: Περιεχόμενο
         created_at: Δημιουργήθηκε στις
         subtitle: Υπότιτλος
-        slug: Χτυπώ δυνατά
+        slug: Slug
         status: Κατάσταση
         title: Τίτλος
         updated_at: Ενημερώθηκε στις
@@ -262,16 +332,16 @@ el:
         description: Περιγραφή
         additional_info: Πρόσθετες πληροφορίες
         start_date: Έναρξη
-        end_date: Τέλος
+        end_date: Λήξη
         debate_start_date: Έναρξη
-        debate_end_date: Τέλος
+        debate_end_date: Λήξη
         draft_start_date: Έναρξη
-        draft_end_date: Τέλος
+        draft_end_date: Λήξη
         draft_publication_date: Ημερομηνία δημοσίευσης προσχέδιου
         allegations_start_date: Έναρξη
-        allegations_end_date: Τέλος
+        allegations_end_date: Λήξη
         proposals_phase_start_date: Έναρξη
-        proposals_phase_end_date: Τέλος
+        proposals_phase_end_date: Λήξη
         result_publication_date: Ημερομηνία δημοσίευσης τελικών αποτελέσματων
         background_color: Χρώμα φόντου
         font_color: Χρώμα γραμματοσειράς
@@ -300,10 +370,10 @@ el:
         text: Σχόλιο
       document:
         title: Τίτλος
-        attachment: Επισύναψη
+        attachment: "Επισύναψη"
       image:
         title: Τίτλος
-        attachment: Επισύναψη
+        attachment: "Επισύναψη"
       poll/question/answer:
         title: Απάντηση
         description: Περιγραφή
@@ -316,7 +386,7 @@ el:
       newsletter:
         segment_recipient: Παραλήπτες
         subject: Θέμα
-        from: Από
+        from: "Από"
         body: Περιεχόμενο email
       admin_notification:
         segment_recipient: Παραλήπτες
@@ -345,10 +415,10 @@ el:
         short_description: Σύντομη περιγραφή
         description: Περιγραφή
         link: Εξωτερικός σύνδεσμος
-        request_to_administrators: Συμπεριλάβετε ένα κουμπί στην πηγή  για να ζητήσετε αυτή την πηγή από τους διαχειριστές
-        day_offset: Σε πόσες ημέρες θέλετε να ενεργοποιηθεί η πρόταση μετά τη δημιουργία της;
+        request_to_administrators: Συμπεριλάβετε ένα κουμπί για να ζητήθέι ο πόρος από τους διαχειριστές
+        day_offset: Πόσες ημέρες μετά τη δημιουργία της πρότασης επιθυμείτε να ενεργοποιηθεί;
         required_supports: Πόση στήριξη πρέπει να λάβει η πρόταση προκειμένου να ενεργοποιηθεί;
-        order: Μπορείτε να εισαγάγετε τη θέση στη λίστα δράσεων στην οποία θα εμφανιστεί στο χρήστη αυτή η δράση 
+        order: Μπορείτε να εισαγάγετε τη θέση στη λίστα δράσεων στην οποία επιθυμείτε να εμφανίζετε αυτή η δράση για τους χρήστες
         active: Ενεργό
         action_type: Τύπος
       dashboard/administrator_task:
@@ -357,12 +427,22 @@ el:
       link:
         label: Τίτλος
         url: Σύνδεσμος
+      valuator:
+        description: Περιγραφή
+        valuator_group_id: Ομάδα αξιολόγησης
+        can_comment: Μπορεί να εισάγει σχόλιο
+        can_edit_dossier: Μπορεί να επεξεργαστεί φακέλους
+      local_census_record:
+        document_type: Τύπος εγγράφου
+        document_number: Αριθμός εγγράφου
+        date_of_birth: Ημερομηνία γέννησης
+        postal_code: Ταχυδρομικός κώδικας
     errors:
       models:
         user:
           attributes:
             email:
-              password_already_set: "Αυτός ο χρήστης έχει ήδη κωδικό πρόσβασης"
+              password_already_set: "Ο χρήστης έχει ήδη κωδικό πρόσβασης"
         debate:
           attributes:
             tag_list:
@@ -391,14 +471,13 @@ el:
         poll/voter:
           attributes:
             document_number:
-              not_in_census: "Έγγραφο το οποίο δεν βρίσκεται σε απογραφή"
-              has_voted: "Ο χρήστης έχει ήδη ψηφίσει"
+              not_in_census: "Έγγραφο το οποίο δεν υπάρχει στην απογραφή"
         legislation/process:
           attributes:
             end_date:
               invalid_date_range: πρέπει να είναι κατά ή μετά την ημερομηνία έναρξης
             debate_end_date:
-              invalid_date_range: πρέπει να είναι πάνω ή μετά την ημερομηνία έναρξης της συζήτησης
+              invalid_date_range: πρέπει να είναι κατά ή μετά την ενδεικτική ημερομηνία έναρξης
             draft_end_date:
               invalid_date_range: πρέπει να είναι κατά ή μετά την ενδεικτική ημερομηνία έναρξης 
             allegations_end_date:
@@ -418,7 +497,7 @@ el:
         signature:
           attributes:
             document_number:
-              not_in_census: "Μη εγκεκριμένο από το Census"
+              not_in_census: "Μη επαληθευμένο από το Census"
               already_voted: "Έχετε ήδη ψηφίσει αυτήν την πρόταση"
         site_customization/page:
           attributes:
@@ -434,6 +513,7 @@ el:
             valuation:
               cannot_comment_valuation: "Δεν μπορείτε να σχολιάσετε μια αξιολόγηση"
       messages:
+        translations_too_short: Υποχρεούται να παρέχετε τουλάχιστον μία μετάφραση
         record_invalid: "Η επικύρωση απέτυχε: %{errors}"
         another_poll_active: Υπάρχει άλλη ενεργή δημοσκόπηση για την δεδομένη περίοδο
         restrict_dependent_destroy:

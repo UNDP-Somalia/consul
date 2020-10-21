@@ -10,7 +10,7 @@ class UserSegments
                 not_supported_on_current_budget].freeze
 
   def self.all_users
-    User.active
+    User.active.where.not(confirmed_at: nil)
   end
 
   def self.administrators
@@ -45,12 +45,9 @@ class UserSegments
 
   def self.not_supported_on_current_budget
     author_ids(
-      User.where(
-                  "id NOT IN (SELECT DISTINCT(voter_id) FROM votes"\
-                  " WHERE votable_type = ? AND votes.votable_id IN (?))",
-                  "Budget::Investment",
-                  current_budget_investments.pluck(:id)
-                )
+      User.where.not(
+        id: Vote.select(:voter_id).where(votable: current_budget_investments).distinct
+      )
     )
   end
 

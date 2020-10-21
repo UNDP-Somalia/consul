@@ -1,4 +1,9 @@
 pl:
+  attributes:
+    geozone_id: "Zakres działania"
+    results_enabled: "Pokaż wyniki"
+    stats_enabled: "Pokaż statystyki"
+    advanced_stats_enabled: "Pokaż zaawansowane statystyki"
   activerecord:
     models:
       activity:
@@ -96,11 +101,6 @@ pl:
         few: "Propozycje obywatelskie"
         many: "Propozycji obywatelskich"
         other: "Propozycji obywatelskich"
-      spending_proposal:
-        one: "Projekt inwestycyjny"
-        few: "Projekty inwestycyjne"
-        many: "Projekty inwestycyjne"
-        other: "Projekty inwestycyjne"
       site_customization/page:
         one: Niestandardowa strona
         few: Strony niestandardowe
@@ -183,6 +183,8 @@ pl:
         description_finished: "Opis po zakończeniu budżetu"
         phase: "Etap"
         currency_symbol: "Waluta"
+      budget/translation:
+        name: "Nazwisko"
       budget/investment:
         heading_id: "Nagłówek"
         title: "Tytuł"
@@ -193,6 +195,8 @@ pl:
         organization_name: "Jeśli wnioskujesz w imieniu zespołu/organizacji, lub w imieniu większej liczby osób, wpisz ich nazwę"
         image: "Opisowy obraz wniosku"
         image_title: "Tytuł obrazu"
+        duration: "Zakres czasu"
+        feasibility_feasible: "Wykonalne"
       geozone:
         name: Nazwa
         external_code: "Zewnętrzny kod (opcjonalnie)"
@@ -238,20 +242,13 @@ pl:
         password_confirmation: "Potwierdzenie hasła"
         password: "Hasło"
         current_password: "Stare hasło"
-        phone_number: "Numer telefonu"
         official_position: "Oficjalne stanowisko"
         official_level: "Oficjalny poziom"
+        phone_number: "Numer telefonu"
         redeemable_code: "Kod weryfikacyjny otrzymany za pośrednictwem poczty e-mail"
       organization:
         name: "Nazwa organizacji"
         responsible_name: "Osoba odpowiedzialna za grupę"
-      spending_proposal:
-        administrator_id: "Administrator"
-        association_name: "Nazwa stowarzyszenia"
-        description: "Opis"
-        external_url: "Link do dodatkowej dokumentacji"
-        geozone_id: "Część dzielnicy, której dotyczy pomysł"
-        title: "Tytuł"
       poll:
         name: "Nazwa"
         starts_at: "Data Rozpoczęcia"
@@ -343,10 +340,10 @@ pl:
         text: Komentarz
       document:
         title: Tytuł
-        attachment: Załącznik
+        attachment: "Załącznik"
       image:
         title: Tytuł
-        attachment: Załącznik
+        attachment: "Załącznik"
       poll/question/answer:
         title: Odpowiedź
         description: Opis
@@ -359,7 +356,7 @@ pl:
       newsletter:
         segment_recipient: Adresaci
         subject: Temat
-        from: Od
+        from: "Od"
         body: Treść wiadomości e-mail
       admin_notification:
         segment_recipient: Adresaci
@@ -418,7 +415,6 @@ pl:
           attributes:
             document_number:
               not_in_census: "Brak dokumentu w spisie"
-              has_voted: "Użytkownik już zagłosował"
         legislation/process:
           attributes:
             end_date:

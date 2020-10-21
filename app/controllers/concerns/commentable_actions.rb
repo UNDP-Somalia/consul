@@ -2,7 +2,6 @@ module CommentableActions
   extend ActiveSupport::Concern
   include Polymorphic
   include Search
-  include DownloadSettingsHelper
   include RemotelyTranslatable
 
   def index
@@ -11,8 +10,6 @@ module CommentableActions
     @resources = @current_order == "recommendations" && current_user.present? ? @resources.recommendations(current_user) : @resources.for_render
     @resources = @resources.search(@search_terms) if @search_terms.present?
     @resources = @advanced_search_terms.present? ? @resources.filter(@advanced_search_terms) : @resources
-    @resources = @resources.tagged_with(@tag_filter) if @tag_filter
-    resources_csv = @resources
 
     @resources = @resources.page(params[:page]).send("sort_by_#{@current_order}")
 
@@ -25,16 +22,6 @@ module CommentableActions
 
     set_resources_instance
     @remote_translations = detect_remote_translations(@resources, featured_proposals)
-
-    respond_to do |format|
-      format.html
-      format.csv do
-        send_data to_csv(resources_csv, resource_model),
-                  type: "text/csv",
-                  disposition: "attachment",
-                  filename: "#{get_resource(resource_model)}.csv"
-      end
-    end
   end
 
   def show
@@ -113,12 +100,6 @@ module CommentableActions
 
     def load_categories
       @categories = Tag.category.order(:name)
-    end
-
-    def parse_tag_filter
-      if params[:tag].present?
-        @tag_filter = params[:tag] if Tag.named(params[:tag]).exists?
-      end
     end
 
     def set_resource_votes(instance)

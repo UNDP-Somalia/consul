@@ -1,9 +1,7 @@
 class Budget
-  require "csv"
   class Investment < ApplicationRecord
     SORTING_OPTIONS = { id: "id", supports: "cached_votes_up" }.freeze
 
-    include ActiveModel::Dirty
     include Rails.application.routes.url_helpers
     include Measurable
     include Sanitizable
@@ -16,6 +14,7 @@ class Budget
     include Mappable
     include Documentable
 
+    acts_as_taggable_on :valuation_tags
     acts_as_votable
     acts_as_paranoid column: :hidden_at
     include ActsAsParanoidAliases
@@ -26,11 +25,16 @@ class Budget
     include Milestoneable
     include Randomizable
 
-    extend DownloadSettings::BudgetInvestmentCsv
-
     translates :title, touch: true
     translates :description, touch: true
     include Globalizable
+
+    audited on: [:update, :destroy]
+    has_associated_audits
+    translation_class.class_eval do
+      audited associated_with: :globalized_model,
+              only: Budget::Investment.translated_attribute_names
+    end
 
     belongs_to :author, -> { with_hidden }, class_name: "User", inverse_of: :budget_investments
     belongs_to :heading
@@ -50,11 +54,6 @@ class Budget
       inverse_of: :commentable,
       class_name: "Comment"
 
-    has_many :tracker_assignments, dependent: :destroy
-    has_many :trackers, through: :tracker_assignments
-
-    delegate :name, :email, to: :author, prefix: true
-
     validates_translation :title, presence: true, length: { in: 4..Budget::Investment.title_max_length }
     validates_translation :description, presence: true, length: { maximum: Budget::Investment.description_max_length }
 
@@ -72,9 +71,9 @@ class Budget
     scope :sort_by_supports, -> { order("cached_votes_up DESC") }
 
     scope :valuation_open,              -> { where(valuation_finished: false) }
-    scope :without_admin,               -> { valuation_open.where(administrator_id: nil) }
+    scope :without_admin,               -> { where(administrator_id: nil) }
     scope :without_valuator_group,      -> { where(valuator_group_assignments_count: 0) }
-    scope :without_valuator,            -> { valuation_open.without_valuator_group.where(valuator_assignments_count: 0) }
+    scope :without_valuator,            -> { without_valuator_group.where(valuator_assignments_count: 0) }
     scope :under_valuation,             -> { valuation_open.valuating.where("administrator_id IS NOT ?", nil) }
     scope :managed,                     -> { valuation_open.where(valuator_assignments_count: 0).where("administrator_id IS NOT ?", nil) }
     scope :valuating,                   -> { valuation_open.where("valuator_assignments_count > 0 OR valuator_group_assignments_count > 0") }
@@ -99,16 +98,12 @@ class Budget
     scope :by_group,          ->(group_id)    { where(group_id: group_id) }
     scope :by_heading,        ->(heading_id)  { where(heading_id: heading_id) }
     scope :by_admin,          ->(admin_id)    { where(administrator_id: admin_id) }
-    scope :by_tag,            ->(tag_name)    { tagged_with(tag_name) }
+    scope :by_tag,            ->(tag_name)    { tagged_with(tag_name).distinct }
 
     scope :for_render, -> { includes(:heading) }
 
     def self.by_valuator(valuator_id)
       where("budget_valuator_assignments.valuator_id = ?", valuator_id).joins(:valuator_assignments)
-    end
-
-    def self.by_tracker(tracker_id)
-      where("budget_tracker_assignments.tracker_id = ?", tracker_id).joins(:tracker_assignments)
     end
 
     def self.by_valuator_group(valuator_group_id)
@@ -121,7 +116,6 @@ class Budget
     after_save :recalculate_heading_winners
     before_validation :set_responsible_name
     before_validation :set_denormalized_ids
-    after_update :change_log
 
     def comments_count
       comments.count
@@ -132,7 +126,7 @@ class Budget
     end
 
     def self.sort_by_title
-      with_translation.sort_by(&:title)
+      all.sort_by(&:title)
     end
 
     def self.filter_params(params)
@@ -173,7 +167,7 @@ class Budget
       ids += results.where(selected: true).pluck(:id)       if params[:advanced_filters].include?("selected")
       ids += results.undecided.pluck(:id)                   if params[:advanced_filters].include?("undecided")
       ids += results.unfeasible.pluck(:id)                  if params[:advanced_filters].include?("unfeasible")
-      results = results.where("budget_investments.id IN (?)", ids) if ids.any?
+      results = results.where(id: ids) if ids.any?
       results
     end
 
@@ -200,7 +194,7 @@ class Budget
         ids += Investment.where(heading_id: hid).order(confidence_score: :desc).limit(max_per_heading).pluck(:id)
       end
 
-      results.where("budget_investments.id IN (?)", ids)
+      results.where(id: ids)
     end
 
     def self.search_by_title_or_id(title_or_id)
@@ -274,8 +268,9 @@ class Budget
       return :not_selected               unless selected?
       return :no_ballots_allowed         unless budget.balloting?
       return :different_heading_assigned unless ballot.valid_heading?(heading)
-      return :not_enough_money           if ballot.present? && !enough_money?(ballot)
       return :casted_offline             if ballot.casted_offline?
+
+      ballot.reason_for_not_being_ballotable(self)
     end
 
     def permission_problem(user)
@@ -307,15 +302,6 @@ class Budget
       user.headings_voted_within_group(group).where(id: heading.id).exists?
     end
 
-    def ballotable_by?(user)
-      reason_for_not_being_ballotable_by(user).blank?
-    end
-
-    def enough_money?(ballot)
-      available_money = ballot.amount_available(heading)
-      price.to_i <= available_money
-    end
-
     def register_selection(user)
       vote_by(voter: user, vote: "yes") if selectable_by?(user)
     end
@@ -325,7 +311,7 @@ class Budget
     end
 
     def recalculate_heading_winners
-      Budget::Result.new(budget, heading).calculate_winners if incompatible_changed?
+      Budget::Result.new(budget, heading).calculate_winners if saved_change_to_incompatible?
     end
 
     def set_responsible_name
@@ -383,14 +369,6 @@ class Budget
       self.valuator_groups.map(&:name).compact.join(", ").presence
     end
 
-    def valuation_tag_list
-      tag_list_on(:valuation)
-    end
-
-    def valuation_tag_list=(tags)
-      set_tag_list_on(:valuation, tags)
-    end
-
     def self.with_milestone_status_id(status_id)
       includes(milestones: :translations).select do |investment|
         investment.milestone_status_id == status_id.to_i
@@ -410,26 +388,12 @@ class Budget
     private
 
       def set_denormalized_ids
-        self.group_id = heading&.group_id if heading_id_changed?
+        self.group_id = heading&.group_id if will_save_change_to_heading_id?
         self.budget_id ||= heading&.group&.budget_id
       end
 
       def set_original_heading_id
         self.original_heading_id = heading_id
-      end
-
-      def change_log
-        self.changed.each do |field|
-          unless field == "updated_at"
-            log = Budget::Investment::ChangeLog.new
-            log.field = field
-            log.author_id = User.current_user.id unless User.current_user.nil?
-            log.investment_id = self.id
-            log.new_value = self.send field
-            log.old_value = self.send "#{field}_was"
-            !log.save
-          end
-        end
       end
 
       def searchable_translations_definitions

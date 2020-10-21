@@ -143,9 +143,9 @@ es:
         description_finished: "Descripción cuando el presupuesto ha finalizado / Resultados"
         phase: "Fase"
         currency_symbol: "Divisa"
-        budget_milestone_tags: "Etiquetas de seguimiento"
-        budget_valuation_tags: "Etiquetas de evaluación"
-        help_link: "Enlace de ayuda"
+        voting_style: "Estilo de la votación final"
+        voting_style_knapsack: Bolsa de dinero
+        voting_style_approval: Por aprobación
       budget/translation:
         name: "Nombre"
       budget/investment:
@@ -166,6 +166,8 @@ es:
         milestone_tag_list: "Etiquetas de Seguimiento"
         price_explanation: "Informe de coste <small>(opcional, dato público)</small>"
         selected: "Marcar como seleccionado"
+        selected_true: "Seleccionado"
+        selected_false: "No seleccionado"
         unfeasibility_explanation: "Informe de inviabilidad <small>(en caso de que lo sea, dato público)</small>"
         valuation_finished: "Informe finalizado"
         valuator_ids: "Grupos"
@@ -196,7 +198,7 @@ es:
         primary: "Principal"
         secondary: "Secundaria"
       budget/group:
-        max_votable_headings: "Máximo número de partidas en que un usuario puede votar"
+        max_votable_headings: "Máximo número de partidas en que un usuario puede seleccionar proyectos"
       budget/group/translation:
         name: "Nombre del grupo"
       budget/heading:
@@ -206,6 +208,7 @@ es:
         name: "Nombre de la partida"
         price: "Cantidad"
         population: "Población (opcional)"
+        max_ballot_lines: "Votos permitidos"
       budget/heading/translation:
         name: "Nombre de la partida"
       budget/phase:
@@ -303,6 +306,7 @@ es:
         body: "Mensaje"
         title: "Título"
       signature_sheet:
+        title: "Título"
         signable_type: "Tipo de hoja de firmas"
         signable_id: "ID Propuesta ciudadana/Proyecto de gasto"
         document_numbers: "Números de documentos"
@@ -335,11 +339,6 @@ es:
       topic:
         title: "Título"
         description: "Texto inicial"
-      votation_type:
-        enum_type: "Tipo de votación"
-        max_groups_answers: "Número máximo de respuestas en el conjunto"
-        max_votes: "Número máximo de votos"
-        prioritization_type: "Tipo de priorizacion"
       banner:
         background_color: Color del fondo
         font_color: Color del texto
@@ -511,6 +510,7 @@ es:
           attributes:
             document_number:
               not_in_census: "Este documento no aparece en el censo"
+            user_id:
               has_voted: "Este usuario ya ha votado"
         legislation/process:
           attributes:
@@ -522,6 +522,10 @@ es:
               invalid_date_range: tiene que ser igual o posterior a la fecha de inicio del borrador
             allegations_end_date:
               invalid_date_range: tiene que ser igual o posterior a la fecha de inicio de los comentarios
+        local_census_record:
+          attributes:
+            document_type:
+              inclusion: no está incluido en la lista, los valores permitidos son 1 para DNI, 2 para pasaporte y 3 para tarjeta de residencia.
         proposal:
           attributes:
             tag_list:
@@ -552,6 +556,10 @@ es:
           attributes:
             valuation:
               cannot_comment_valuation: "No puedes comentar una evaluación"
+        remote_translation:
+          attributes:
+            locale:
+              already_translated: Recurso ya traducido
       messages:
         translations_too_short: El obligatorio proporcionar una traducción como mínimo
         record_invalid: "Error de validación: %{errors}"

@@ -14,7 +14,6 @@ class User < ApplicationRecord
   has_one :administrator
   has_one :moderator
   has_one :valuator
-  has_one :tracker
   has_one :manager
   has_one :poll_officer, class_name: "Poll::Officer"
   has_one :organization
@@ -23,16 +22,11 @@ class User < ApplicationRecord
   has_many :identities, dependent: :destroy
   has_many :debates, -> { with_hidden }, foreign_key: :author_id, inverse_of: :author
   has_many :proposals, -> { with_hidden }, foreign_key: :author_id, inverse_of: :author
-  has_many :people_proposals, -> { with_hidden }, foreign_key: :author_id, inverse_of: :author
   has_many :activities
   has_many :budget_investments, -> { with_hidden },
     class_name:  "Budget::Investment",
     foreign_key: :author_id,
     inverse_of:  :author
-  has_many :budget_investment_change_logs,
-    foreign_key: :author_id,
-    inverse_of:  :author,
-    class_name:  "Budget::Investment::ChangeLog"
   has_many :comments, -> { with_hidden }, inverse_of: :user
   has_many :failed_census_calls
   has_many :notifications
@@ -46,7 +40,6 @@ class User < ApplicationRecord
     inverse_of:  :receiver
   has_many :legislation_answers, class_name: "Legislation::Answer", dependent: :destroy, inverse_of: :user
   has_many :follows
-  has_many :budget_rol_assignments
   has_many :legislation_annotations,
     class_name:  "Legislation::Annotation",
     foreign_key: :author_id,
@@ -81,8 +74,6 @@ class User < ApplicationRecord
     foreign_key: :author_id,
     inverse_of:  :author
   has_many :topics, foreign_key: :author_id, inverse_of: :author
-  has_many :budgets, through: :budget_rol_assignments
-  has_many :votation_set_answers
   belongs_to :geozone
 
   validates :username, presence: true, if: :username_required?
@@ -117,8 +108,10 @@ class User < ApplicationRecord
   scope :active,         -> { where(erased_at: nil) }
   scope :erased,         -> { where.not(erased_at: nil) }
   scope :public_for_api, -> { all }
-  scope :by_comments,    ->(query, topics_ids) { joins(:comments).where(query, topics_ids).distinct }
-  scope :by_authors,     ->(author_ids) { where("users.id IN (?)", author_ids) }
+  scope :by_authors,     ->(author_ids) { where(id: author_ids) }
+  scope :by_comments,    ->(commentables) do
+    joins(:comments).where("comments.commentable": commentables).distinct
+  end
   scope :by_username_email_or_document_number, ->(search_string) do
     string = "%#{search_string}%"
     where("username ILIKE ? OR email ILIKE ? OR document_number ILIKE ?", string, string, string)
@@ -200,10 +193,6 @@ class User < ApplicationRecord
 
   def valuator?
     valuator.present?
-  end
-
-  def tracker?
-    tracker.present?
   end
 
   def manager?
@@ -407,14 +396,6 @@ class User < ApplicationRecord
   def interests
     followables = follows.map(&:followable)
     followables.compact.map { |followable| followable.tags.map(&:name) }.flatten.compact.uniq
-  end
-
-  def self.current_user
-    Thread.current[:user]
-  end
-
-  def self.current_user=(user)
-    Thread.current[:user] = user
   end
 
   def send_devise_notification(notification, *args)

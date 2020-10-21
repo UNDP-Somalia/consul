@@ -399,7 +399,7 @@ describe Debate do
   describe "custom tag counters when hiding/restoring" do
     it "decreases the tag counter when hiden, and increases it when restored" do
       debate = create(:debate, tag_list: "foo")
-      tag = Tag.where(name: "foo").first
+      tag = Tag.find_by(name: "foo")
       expect(tag.debates_count).to eq(1)
 
       debate.hide
@@ -503,7 +503,8 @@ describe Debate do
     end
 
     context "stemming" do
-      it "searches word stems" do
+      it "searches word stems in Spanish" do
+        allow(SearchDictionarySelector).to receive(:call).and_return("spanish")
         debate = create(:debate, title: "limpiar")
 
         results = Debate.search("limpiará")

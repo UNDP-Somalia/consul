@@ -1,8 +1,6 @@
 class Admin::BudgetInvestmentsController < Admin::BaseController
   include FeatureFlags
   include CommentableActions
-  include DownloadSettingsHelper
-  include ChangeLogHelper
   include Translatable
 
   feature_flag :budgets
@@ -10,12 +8,11 @@ class Admin::BudgetInvestmentsController < Admin::BaseController
   has_orders %w[oldest], only: [:show, :edit]
   has_filters %w[all], only: [:index, :toggle_selection]
 
-  before_action :load_budget, except: :show_investment_log
+  before_action :load_budget
   before_action :load_investment, only: [:show, :edit, :update, :toggle_selection]
   before_action :load_ballot, only: [:show, :index]
   before_action :parse_valuation_filters
   before_action :load_investments, only: [:index, :toggle_selection]
-  before_action :load_change_log, only: [:show]
 
   def index
     load_tags
@@ -23,9 +20,7 @@ class Admin::BudgetInvestmentsController < Admin::BaseController
       format.html
       format.js
       format.csv do
-        send_data to_csv(@investments, Budget::Investment),
-                  type: "text/csv",
-                  disposition: "attachment",
+        send_data Budget::Investment::Exporter.new(@investments).to_csv,
                   filename: "budget_investments.csv"
       end
     end
@@ -36,10 +31,9 @@ class Admin::BudgetInvestmentsController < Admin::BaseController
   end
 
   def edit
-    load_admins
-    load_valuators
+    authorize! :admin_update, @investment
+    load_staff
     load_valuator_groups
-    load_trackers
     load_tags
   end
 
@@ -51,16 +45,15 @@ class Admin::BudgetInvestmentsController < Admin::BaseController
                                                       Budget::Investment.filter_params(params).to_h),
                   notice: t("flash.actions.update.budget_investment")
     else
-      load_admins
-      load_valuators
+      load_staff
       load_valuator_groups
-      load_trackers
       load_tags
       render :edit
     end
   end
 
   def toggle_selection
+    authorize! :toggle_selection, @investment
     @investment.toggle :selected
     @investment.save!
     load_investments
@@ -91,7 +84,7 @@ class Admin::BudgetInvestmentsController < Admin::BaseController
     def budget_investment_params
       attributes = [:external_url, :heading_id, :administrator_id, :tag_list,
                     :valuation_tag_list, :incompatible, :visible_to_valuators, :selected,
-                    :milestone_tag_list, tracker_ids: [], valuator_ids: [], valuator_group_ids: []]
+                    :milestone_tag_list, valuator_ids: [], valuator_group_ids: []]
       params.require(:budget_investment).permit(attributes, translation_params(Budget::Investment))
     end
 
@@ -103,18 +96,9 @@ class Admin::BudgetInvestmentsController < Admin::BaseController
       @investment = @budget.investments.find(params[:id])
     end
 
-    def load_admins
-      @admins = @budget.administrators.includes(:user).all
-    end
-
-    def load_trackers
-      @trackers = @budget.trackers.includes(:user).all.order(description: :asc)
-                    .order("users.email ASC")
-    end
-
-    def load_valuators
-      @valuators = @budget.valuators.includes(:user).all.order(description: :asc)
-                     .order("users.email ASC")
+    def load_staff
+      @admins = @budget.administrators.includes(:user)
+      @valuators = @budget.valuators.includes(:user).order(description: :asc).order("users.email ASC")
     end
 
     def load_valuator_groups
@@ -122,7 +106,7 @@ class Admin::BudgetInvestmentsController < Admin::BaseController
     end
 
     def load_tags
-      @tags = Budget::Investment.tags_on(:valuation).order(:name).distinct
+      @tags = Budget::Investment.tags_on(:valuation_tags).order(:name).distinct
     end
 
     def load_ballot
@@ -140,9 +124,5 @@ class Admin::BudgetInvestmentsController < Admin::BaseController
           params[:valuator_id] = id
         end
       end
-    end
-
-    def load_change_log
-      @logs = Budget::Investment::ChangeLog.by_investment(@investment.id)
     end
 end

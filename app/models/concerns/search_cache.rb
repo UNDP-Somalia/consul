@@ -6,8 +6,7 @@ module SearchCache
   end
 
   def calculate_tsvector
-    ActiveRecord::Base.connection.execute("
-      UPDATE #{self.class.table_name} SET tsv = (#{searchable_values_sql}) WHERE id = #{id}")
+    self.class.where(id: id).update_all("tsv = (#{searchable_values_sql})")
   end
 
   private
@@ -20,7 +19,8 @@ module SearchCache
     end
 
     def set_tsvector(value, weight)
-      "setweight(to_tsvector('spanish', unaccent(coalesce(#{quote(strip_html(value))}, ''))), #{quote(weight)})"
+      dict = quote(SearchDictionarySelector.call)
+      "setweight(to_tsvector(#{dict}, unaccent(coalesce(#{quote(strip_html(value))}, ''))), #{quote(weight)})"
     end
 
     def quote(value)

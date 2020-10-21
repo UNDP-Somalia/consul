@@ -7,6 +7,33 @@ describe Budget do
   it_behaves_like "reportable"
   it_behaves_like "globalizable", :budget
 
+  describe "scopes" do
+    describe ".open" do
+      it "returns all budgets that are not in the finished phase" do
+        (Budget::Phase::PHASE_KINDS - ["finished"]).each do |phase|
+          budget = create(:budget, phase: phase)
+          expect(Budget.open).to include(budget)
+        end
+      end
+    end
+
+    describe ".valuating_or_later" do
+      it "returns budgets valuating or later" do
+        valuating = create(:budget, :valuating)
+        finished = create(:budget, :finished)
+
+        expect(Budget.valuating_or_later).to match_array([valuating, finished])
+      end
+
+      it "does not return budgets which haven't reached valuation" do
+        create(:budget, :drafting)
+        create(:budget, :selecting)
+
+        expect(Budget.valuating_or_later).to be_empty
+      end
+    end
+  end
+
   describe "name" do
     before do
       budget.update(name_en: "object name")
@@ -172,15 +199,6 @@ describe Budget do
     end
   end
 
-  describe "#open" do
-    it "returns all budgets that are not in the finished phase" do
-      (Budget::Phase::PHASE_KINDS - ["finished"]).each do |phase|
-        budget = create(:budget, phase: phase)
-        expect(Budget.open).to include(budget)
-      end
-    end
-  end
-
   describe "heading_price" do
     it "returns the heading price if the heading provided is part of the budget" do
       heading = create(:budget_heading, price: 100, budget: budget)
@@ -296,7 +314,7 @@ describe Budget do
     end
   end
 
-  describe "#milestone_tags" do
+  describe "#investments_milestone_tags" do
     let(:investment1) { build(:budget_investment, :winner) }
     let(:investment2) { build(:budget_investment, :winner) }
     let(:investment3) { build(:budget_investment) }
@@ -304,7 +322,7 @@ describe Budget do
     it "returns an empty array if not investments milestone_tags" do
       budget.investments << investment1
 
-      expect(budget.milestone_tags).to eq([])
+      expect(budget.investments_milestone_tags).to eq([])
     end
 
     it "returns array of investments milestone_tags" do
@@ -312,7 +330,7 @@ describe Budget do
       investment1.save!
       budget.investments << investment1
 
-      expect(budget.milestone_tags).to eq(["tag1"])
+      expect(budget.investments_milestone_tags).to eq(["tag1"])
     end
 
     it "returns uniq list of investments milestone_tags" do
@@ -323,7 +341,7 @@ describe Budget do
       budget.investments << investment1
       budget.investments << investment2
 
-      expect(budget.milestone_tags).to eq(["tag1"])
+      expect(budget.investments_milestone_tags).to eq(["tag1"])
     end
 
     it "returns tags only for winner investments" do
@@ -334,7 +352,28 @@ describe Budget do
       budget.investments << investment1
       budget.investments << investment3
 
-      expect(budget.milestone_tags).to eq(["tag1"])
+      expect(budget.investments_milestone_tags).to eq(["tag1"])
+    end
+  end
+
+  describe "#voting_style" do
+    context "Validations" do
+      it { expect(build(:budget, :approval)).to be_valid }
+      it { expect(build(:budget, :knapsack)).to be_valid }
+      it { expect(build(:budget, voting_style: "Oups!")).not_to be_valid }
+    end
+
+    context "Related supportive methods" do
+      describe "#approval_voting?" do
+        it { expect(build(:budget, :approval).approval_voting?).to be true }
+        it { expect(build(:budget, :knapsack).approval_voting?).to be false }
+      end
+    end
+
+    context "Defaults" do
+      it "defaults to knapsack voting style" do
+        expect(build(:budget).voting_style).to eq "knapsack"
+      end
     end
   end
 end

@@ -50,6 +50,7 @@ describe Newsletter do
   describe "#list_of_recipient_emails" do
     before do
       create(:user, newsletter: true, email: "newsletter_user@consul.dev")
+      create(:user, newsletter: true, email: "newsletter_unconfirmed_user@consul.dev", confirmed_at: nil)
       create(:user, newsletter: false, email: "no_news_user@consul.dev")
       create(:user, email: "erased_user@consul.dev").erase
       newsletter.update!(segment_recipient: "all_users")
@@ -116,8 +117,8 @@ describe Newsletter do
       expect(Activity.count).to eq(3)
 
       recipients.each do |email|
-        user = User.where(email: email).first
-        activity = Activity.where(user: user).first
+        user = User.find_by(email: email)
+        activity = Activity.find_by(user: user)
 
         expect(activity.user_id).to eq(user.id)
         expect(activity.action).to eq("email")

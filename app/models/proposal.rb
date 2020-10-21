@@ -1,5 +1,3 @@
-require "csv"
-
 class Proposal < ApplicationRecord
   include Rails.application.routes.url_helpers
   include Flaggable
@@ -42,9 +40,6 @@ class Proposal < ApplicationRecord
   has_many :dashboard_executed_actions, dependent: :destroy, class_name: "Dashboard::ExecutedAction"
   has_many :dashboard_actions, through: :dashboard_executed_actions, class_name: "Dashboard::Action"
   has_many :polls, as: :related, inverse_of: :related
-
-  extend DownloadSettings::ProposalCsv
-  delegate :name, :email, to: :author, prefix: true
 
   validates_translation :title, presence: true, length: { in: 4..Proposal.title_max_length }
   validates_translation :description, length: { maximum: Proposal.description_max_length }
@@ -237,7 +232,7 @@ class Proposal < ApplicationRecord
   end
 
   def users_to_notify
-    (voters + followers).uniq - [author]
+    followers - [author]
   end
 
   def self.proposals_orders(user)

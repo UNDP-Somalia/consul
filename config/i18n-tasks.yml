@@ -46,8 +46,6 @@ data:
     - config/locales/%{locale}/i18n.yml
     - config/locales/%{locale}/milestones.yml
     - config/locales/%{locale}/stats.yml
-    - config/locales/%{locale}/download.yml
-    - config/locales/%{locale}/tracking.yml
 
   # Locale files to write new keys to, based on a list of key pattern => file rules. Matched from top to bottom:
   # `i18n-tasks normalize -p` will force move the keys according to these rules
@@ -129,6 +127,10 @@ ignore_unused:
   - "budgets.phase.*"
   - "budgets.investments.index.orders.*"
   - "budgets.index.section_header.*"
+  - "budgets.ballots.show.amount_available.*"
+  - "budgets.ballots.show.amount_limit.*"
+  - "budgets.ballots.show.amount_spent.*"
+  - "budgets.investments.index.sidebar.voted_info.*"
   - "activerecord.*"
   - "activemodel.*"
   - "attributes.*"
@@ -139,8 +141,9 @@ ignore_unused:
   - "admin.banners.index.filters.*"
   - "admin.hidden_debates.index.filter*"
   - "admin.hidden_proposals.index.filter*"
-  - "admin.proposal_notifications.index.filter*"
+  - "admin.hidden_proposal_notifications.index.filter*"
   - "admin.budgets.index.filter*"
+  - "admin.budgets.edit.(administrators|valuators).*"
   - "admin.budget_investments.index.filter*"
   - "admin.organizations.index.filter*"
   - "admin.hidden_users.index.filter*"
@@ -160,6 +163,7 @@ ignore_unused:
   - "admin.homepage.*"
   - "admin.dashboard.administrator_tasks.index.filter*"
   - "admin.dashboard.actions.index.default.*"
+  - "admin.users.index.filter*"
   - "moderation.comments.index.filter*"
   - "moderation.comments.index.order*"
   - "moderation.debates.index.filter*"
@@ -191,7 +195,6 @@ ignore_unused:
   - "legislation.processes.proposals.filters.*"
   - "helpers.page_entries_info.*" # kaminari
   - "views.pagination.*" # kaminari
-  - "shared.download.*"
   - "shared.suggest.*"
   - "invisible_captcha.*"
   - "admin.legislation.processes.process.*"

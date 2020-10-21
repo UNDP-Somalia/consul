@@ -45,10 +45,7 @@ class Legislation::Question < ApplicationRecord
     process.debate_phase.open?
   end
 
-  def best_comments(number)
-    Comment.where(commentable_id: id)
-      .where(commentable_type: "Legislation::Question")
-      .order("cached_votes_up - cached_votes_down DESC")
-      .take(number)
+  def best_comments
+    comments.sort_by_supports.limit(3)
   end
 end

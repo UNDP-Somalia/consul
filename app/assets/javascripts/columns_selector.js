@@ -16,7 +16,7 @@
       });
     },
     initChecks: function() {
-      $(".column-selecteable th[data-field]").each(function() {
+      $(".column-selectable th[data-field]").each(function() {
         var field, input, item, label, text;
         field = $(this).data("field");
         text = $(this).text().trim();
@@ -82,9 +82,12 @@
           App.ColumnsSelector.toggleColumn(event);
         }
       });
-      $(".column-selecteable").on("inserted", function() {
+      $(".column-selectable").on("inserted", function() {
         App.ColumnsSelector.initColumns();
       });
+    },
+    destroy: function() {
+      $("#js-columns-selector-wrapper").children(":not(#column_selector_item_template)").remove();
     }
   };
 }).call(this);

@@ -12,8 +12,6 @@
 <% if @processes.any? %>
   <h3><%= page_entries_info @processes %></h3>
 
-  <a class="small float-right clear" data-open="download-modal"><%= t("admin.legislation.processes.index.link") %></a>
-
   <table class="stack">
     <thead>
       <tr>
@@ -37,9 +35,7 @@
           <td class="text-center"><%= I18n.l process.end_date %></td>
           <td class="text-center"><%= process.total_comments %></td>
           <td>
-            <%= link_to t("admin.legislation.processes.index.delete"), admin_legislation_process_path(process),
-                        method: :delete,
-                        class: "button hollow alert expanded" %>
+            <%= render Admin::TableActionsComponent.new(process, actions: [:destroy]) %>
           </td>
         </tr>
       <% end %>
@@ -52,5 +48,3 @@
     <%= page_entries_info @processes %>
   </div>
 <% end %>
-
-<%= render "admin/download_settings/modal", resource: { name: "legislation_processes" } %>

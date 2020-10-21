@@ -1,7 +1,6 @@
 module TranslatableFormHelper
   def translatable_form_for(record, options = {})
-    options_full = options.merge(builder: TranslatableFormBuilder)
-    form_for(record, options_full) do |f|
+    form_for(record, options.merge(builder: TranslatableFormBuilder)) do |f|
       yield(f)
     end
   end
@@ -11,7 +10,7 @@ module TranslatableFormHelper
   end
 
   def backend_translations_enabled?
-    (controller.class.parents & [Admin, Management, Valuation, Tracking]).any?
+    (controller.class.parents & [Admin, Management, Valuation]).any?
   end
 
   def highlight_translation_html_class
@@ -35,7 +34,7 @@ module TranslatableFormHelper
 
       def fields_for_locale(locale)
         fields_for_translation(@translations[locale]) do |translations_form|
-          @template.content_tag :div, translations_options(translations_form.object, locale) do
+          @template.tag.div translations_options(translations_form.object, locale) do
             @template.concat translations_form.hidden_field(
               :_destroy,
               value: !@template.enabled_locale?(translations_form.object.globalized_model, locale),

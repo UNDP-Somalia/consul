@@ -1,5 +1,5 @@
 # config valid only for current version of Capistrano
-lock "~> 3.10.1"
+lock "~> 3.14.1"
 
 def deploysecret(key)
   @deploy_secrets_yml ||= YAML.load_file("config/deploy-secrets.yml")[fetch(:stage).to_s]
@@ -11,8 +11,11 @@ set :rvm1_map_bins, -> { fetch(:rvm_map_bins).to_a.concat(%w[rake gem bundle rub
 
 set :application, "consul"
 set :full_app_name, deploysecret(:full_app_name)
-
+set :deploy_to, deploysecret(:deploy_to)
 set :server_name, deploysecret(:server_name)
+set :db_server, deploysecret(:db_server)
+set :ssh_options, port: deploysecret(:ssh_port)
+
 set :repo_url, "https://github.com/consul/consul.git"
 
 set :revision, `git rev-parse --short #{fetch(:branch)}`.strip
@@ -21,12 +24,14 @@ set :log_level, :info
 set :pty, true
 set :use_sudo, false
 
-set :linked_files, %w[config/database.yml config/secrets.yml config/environments/production.rb]
-set :linked_dirs, %w[log tmp public/system public/assets public/ckeditor_assets]
+set :linked_files, %w[config/database.yml config/secrets.yml]
+set :linked_dirs, %w[.bundle log tmp public/system public/assets public/ckeditor_assets]
 
 set :keep_releases, 5
 
 set :local_user, ENV["USER"]
+
+set :puma_conf, "#{release_path}/config/puma/#{fetch(:rails_env)}.rb"
 
 set :delayed_job_workers, 2
 set :delayed_job_roles, :background
@@ -40,18 +45,23 @@ set(:config_files, %w[
 set :whenever_roles, -> { :app }
 
 namespace :deploy do
-  before :starting, "rvm1:install:rvm"
-  before :starting, "rvm1:install:ruby"
-  before :starting, "install_bundler_gem"
+  Rake::Task["delayed_job:default"].clear_actions
+  Rake::Task["puma:smart_restart"].clear_actions
+
+  after :updating, "rvm1:install:rvm"
+  after :updating, "rvm1:install:ruby"
+  after :updating, "install_bundler_gem"
 
   after "deploy:migrate", "add_new_settings"
-  after :publishing, "deploy:restart"
-  after :published, "delayed_job:restart"
-  after :published, "refresh_sitemap"
 
-  before "deploy:restart", "setup_puma"
+  after  :publishing, "setup_puma"
 
-  after :finishing, "deploy:cleanup"
+  after :published, "deploy:restart"
+  before "deploy:restart", "puma:restart"
+  before "deploy:restart", "delayed_job:restart"
+  before "deploy:restart", "puma:start"
+
+  after :finished, "refresh_sitemap"
 
   desc "Deploys and runs the tasks needed to upgrade to a new release"
   task :upgrade do
@@ -63,7 +73,7 @@ end
 task :install_bundler_gem do
   on roles(:app) do
     within release_path do
-      execute :rvm, fetch(:rvm1_ruby_version), "do", "gem install bundler"
+      execute :rvm, fetch(:rvm1_ruby_version), "do", "gem install bundler --version 1.17.1"
     end
   end
 end
@@ -98,21 +108,12 @@ task :execute_release_tasks do
   end
 end
 
-desc "Create pid and socket folders needed by puma and convert unicorn sockets into symbolic links \
-      to the puma socket, so legacy nginx configurations pointing to the unicorn socket keep working"
+desc "Create pid and socket folders needed by puma"
 task :setup_puma do
   on roles(:app) do
     with rails_env: fetch(:rails_env) do
       execute "mkdir -p #{shared_path}/tmp/sockets; true"
       execute "mkdir -p #{shared_path}/tmp/pids; true"
-
-      if test("[ -e #{shared_path}/tmp/sockets/unicorn.sock ]")
-        execute "ln -sf #{shared_path}/tmp/sockets/puma.sock #{shared_path}/tmp/sockets/unicorn.sock; true"
-      end
-
-      if test("[ -e #{shared_path}/sockets/unicorn.sock ]")
-        execute "ln -sf #{shared_path}/tmp/sockets/puma.sock #{shared_path}/sockets/unicorn.sock; true"
-      end
     end
   end
 end
